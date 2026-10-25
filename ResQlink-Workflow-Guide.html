@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090810">
+  <title>ResQlink · Workflow Guide</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090810;
+      --surface: #11101b;
+      --surface-2: #171522;
+      --line: rgba(196, 181, 253, .16);
+      --text: #f5f2ff;
+      --muted: #aaa5bc;
+      --purple: #a78bfa;
+      --purple-bright: #c4b5fd;
+      --green: #86efac;
+      --amber: #fcd34d;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .35);
+      font-family: "Times New Roman", Times, serif;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 8% 0%, rgba(124, 58, 237, .18), transparent 36rem),
+        radial-gradient(ellipse at 95% 25%, rgba(192, 38, 211, .11), transparent 32rem),
+        var(--bg);
+    }
+    button, a { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; }
+    .shell { width: min(1180px, calc(100% - 36px)); margin-inline: auto; }
+    .topbar {
+      position: sticky;
+      z-index: 5;
+      top: 0;
+      border-bottom: 1px solid var(--line);
+      background: rgba(9, 8, 16, .82);
+      backdrop-filter: blur(18px);
+    }
+    .topbar-inner {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-size: 1.1rem; font-weight: 700; letter-spacing: .02em; }
+    .brand-mark {
+      display: grid;
+      width: 39px;
+      height: 39px;
+      place-items: center;
+      border: 1px solid rgba(196, 181, 253, .35);
+      border-radius: 13px;
+      color: var(--purple-bright);
+      background: linear-gradient(145deg, rgba(124, 58, 237, .38), rgba(30, 27, 45, .85));
+      box-shadow: 0 0 24px rgba(139, 92, 246, .2);
+      animation: brand-breathe 3.2s ease-in-out infinite;
+    }
+    .brand small { display: block; margin-top: 2px; color: var(--muted); font-size: .72rem; font-weight: 400; letter-spacing: .08em; }
+    .top-link {
+      padding: 10px 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--purple-bright);
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .top-link:hover { transform: translateY(-2px); border-color: rgba(196, 181, 253, .5); background: rgba(167, 139, 250, .1); }
+    .hero { position: relative; overflow: hidden; padding: clamp(48px, 9vw, 104px) 0 44px; }
+    .hero::before, .hero::after {
+      position: absolute;
+      z-index: -1;
+      width: 270px;
+      height: 270px;
+      border: 1px solid rgba(196, 181, 253, .12);
+      border-radius: 50%;
+      content: "";
+      animation: orbit 24s linear infinite;
+    }
+    .hero::before { top: 12px; right: 8%; }
+    .hero::after { top: 48px; right: calc(8% + 40px); width: 190px; height: 190px; animation-direction: reverse; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 12px;
+      border: 1px solid rgba(167, 139, 250, .25);
+      border-radius: 999px;
+      color: var(--purple-bright);
+      background: rgba(124, 58, 237, .1);
+      font-size: .78rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(134, 239, 172, .5); animation: pulse 1.8s infinite; }
+    h1 { max-width: 790px; margin: 20px 0 14px; font-size: clamp(2.7rem, 7.5vw, 5.8rem); line-height: .99; letter-spacing: -.045em; }
+    .gradient-text { color: var(--purple-bright); background: linear-gradient(95deg, #ddd6fe, #a78bfa 50%, #e879f9); background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-copy { max-width: 670px; color: #c5bfd6; font-size: clamp(1.05rem, 2vw, 1.25rem); line-height: 1.65; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 27px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 46px;
+      padding: 11px 17px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .button:hover { transform: translateY(-3px); }
+    .button:active { transform: translateY(0) scale(.98); }
+    .button-primary { color: #140b25; background: linear-gradient(110deg, #c4b5fd, #a78bfa 62%, #e9a8ff); box-shadow: 0 10px 30px rgba(124, 58, 237, .25); }
+    .button-primary:hover { box-shadow: 0 14px 36px rgba(124, 58, 237, .42); }
+    .button-quiet { border-color: var(--line); color: var(--text); background: rgba(255, 255, 255, .035); }
+    .architecture {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 48px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(17, 16, 27, .7);
+      box-shadow: var(--shadow);
+    }
+    .arch-node {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-height: 72px;
+      padding: 12px 15px;
+      border: 1px solid rgba(196, 181, 253, .1);
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(167, 139, 250, .09), rgba(255, 255, 255, .015));
+    }
+    .arch-node:not(:last-child)::after {
+      position: absolute;
+      z-index: 1;
+      top: 50%;
+      right: -18px;
+      width: 24px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--purple), transparent);
+      content: "";
+      animation: link-glow 1.8s ease-in-out infinite;
+    }
+    .arch-icon { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 12px; color: var(--purple-bright); background: rgba(167, 139, 250, .13); }
+    .arch-node strong { display: block; font-size: 1.02rem; }
+    .arch-node small { display: block; margin-top: 3px; color: var(--muted); font-size: .82rem; }
+    .section { padding: 34px 0 72px; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+    .section-heading h2 { margin: 8px 0 0; font-size: clamp(1.8rem, 4vw, 2.8rem); }
+    .section-heading p { max-width: 490px; margin: 0; color: var(--muted); line-height: 1.55; }
+    .workflow-tabs { display: flex; flex-wrap: wrap; gap: 9px; margin: 20px 0; }
+    .tab {
+      padding: 10px 15px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #cbc5d9;
+      background: rgba(255, 255, 255, .025);
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+    .tab:hover { border-color: rgba(196, 181, 253, .4); transform: translateY(-2px); }
+    .tab[aria-selected="true"] { border-color: rgba(196, 181, 253, .52); color: #f5f0ff; background: rgba(124, 58, 237, .2); box-shadow: 0 0 25px rgba(124, 58, 237, .12); }
+    .demo-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      margin: 20px 0;
+      padding: 13px 15px;
+      border: 1px solid rgba(252, 211, 77, .2);
+      border-radius: 14px;
+      color: #fce7a2;
+      background: rgba(120, 83, 10, .12);
+      font-size: .95rem;
+      line-height: 1.45;
+    }
+    .demo-banner svg { flex: 0 0 auto; margin-top: 1px; }
+    .workflow-layout { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(300px, .88fr); gap: 18px; }
+    .journey-card, .detail-card {
+      min-height: 440px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(23, 21, 34, .94), rgba(14, 13, 22, .96));
+      box-shadow: var(--shadow);
+    }
+    .journey-card { padding: clamp(20px, 4vw, 34px); }
+    .journey-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .journey-top p { margin: 0; color: var(--purple-bright); font-size: .74rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    .step-count { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .progress-track { height: 4px; overflow: hidden; margin: 18px 0 27px; border-radius: 9px; background: rgba(196, 181, 253, .12); }
+    .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #7c3aed, #c4b5fd, #e879f9); transition: width .5s cubic-bezier(.2,.8,.2,1); }
+    .step-icon {
+      display: grid;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      border: 1px solid rgba(196, 181, 253, .25);
+      border-radius: 18px;
+      color: var(--purple-bright);
+      background: linear-gradient(145deg, rgba(124, 58, 237, .26), rgba(167, 139, 250, .06));
+      box-shadow: 0 10px 28px rgba(124, 58, 237, .13);
+      animation: icon-float 4s ease-in-out infinite;
+    }
+    .step-title { margin: 19px 0 8px; font-size: clamp(1.65rem, 4vw, 2.35rem); }
+    .step-description { max-width: 690px; margin: 0; color: #c4bfd1; font-size: 1.06rem; line-height: 1.7; }
+    .step-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 19px; }
+    .chip { padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; color: #d9d2e9; background: rgba(255, 255, 255, .03); font-size: .8rem; }
+    .endpoint {
+      margin-top: 23px;
+      padding: 14px 16px;
+      border: 1px solid rgba(196, 181, 253, .14);
+      border-radius: 14px;
+      background: rgba(5, 5, 10, .55);
+    }
+    .endpoint-label { display: block; margin-bottom: 8px; color: var(--muted); font-size: .72rem; letter-spacing: .13em; text-transform: uppercase; }
+    code { color: #d8cafa; font-family: Consolas, "Courier New", monospace; font-size: .82rem; overflow-wrap: anywhere; }
+    .journey-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 25px; }
+    .control-group { display: flex; gap: 9px; }
+    .icon-button { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, .04); cursor: pointer; transition: all .2s ease; }
+    .icon-button:hover:not(:disabled) { border-color: rgba(196, 181, 253, .5); color: var(--purple-bright); transform: translateY(-2px); }
+    .icon-button:disabled { cursor: not-allowed; opacity: .35; }
+    .detail-card { padding: 25px; }
+    .detail-card h3 { margin: 0 0 18px; font-size: 1.25rem; }
+    .detail-list { display: grid; gap: 13px; margin: 0; padding: 0; list-style: none; }
+    .detail-item { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; padding-bottom: 13px; border-bottom: 1px solid rgba(196, 181, 253, .09); color: #d0cadc; line-height: 1.5; }
+    .detail-item:last-child { border: 0; }
+    .detail-item svg { margin-top: 2px; color: var(--purple); }
+    .detail-item strong { display: block; margin-bottom: 2px; color: var(--text); }
+    .role-note { margin-top: 17px; padding: 12px 13px; border: 1px solid rgba(134, 239, 172, .17); border-radius: 13px; color: #c9f5d7; background: rgba(34, 197, 94, .07); line-height: 1.5; }
+    .mini-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; }
+    .mini-node { padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; color: #ddd6fe; background: rgba(124, 58, 237, .08); font-size: .82rem; }
+    .mini-arrow { color: var(--purple); animation: arrow-nudge 1.2s ease-in-out infinite; }
+    .tour-step { animation: step-in .44s cubic-bezier(.2,.8,.2,1) both; }
+    .more-workflows { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+    .info-card { padding: 21px; border: 1px solid var(--line); border-radius: 18px; background: rgba(17, 16, 27, .68); transition: transform .25s ease, border-color .25s ease, background .25s ease; }
+    .info-card:hover { transform: translateY(-5px); border-color: rgba(196, 181, 253, .38); background: rgba(23, 21, 34, .92); }
+    .info-card .arch-icon { margin-bottom: 16px; }
+    .info-card h3 { margin: 0 0 8px; font-size: 1.2rem; }
+    .info-card p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .info-card code { display: block; margin-top: 13px; font-size: .74rem; }
+    .footer { padding: 22px 0 35px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
+    .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+    .reveal { animation: step-in .7s both; }
+    :focus-visible { outline: 2px solid var(--purple-bright); outline-offset: 4px; }
+
+    @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(134, 239, 172, 0); } 100% { box-shadow: 0 0 0 0 rgba(134, 239, 172, 0); } }
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    @keyframes brand-breathe { 50% { box-shadow: 0 0 30px rgba(167, 139, 250, .42); transform: translateY(-2px); } }
+    @keyframes link-glow { 50% { opacity: .45; filter: brightness(1.8); } }
+    @keyframes icon-float { 50% { transform: translateY(-5px) rotate(-2deg); } }
+    @keyframes arrow-nudge { 50% { transform: translateX(3px); } }
+    @keyframes step-in { from { opacity: 0; transform: translateY(11px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 780px) {
+      .workflow-layout { grid-template-columns: 1fr; }
+      .journey-card, .detail-card { min-height: auto; }
+      .more-workflows { grid-template-columns: 1fr; }
+      .architecture { grid-template-columns: 1fr; }
+      .arch-node:not(:last-child)::after { top: auto; right: auto; bottom: -13px; left: 35px; width: 2px; height: 16px; }
+      .section-heading { align-items: start; flex-direction: column; }
+      .hero::before { right: -180px; }
+      .hero::after { right: -135px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 12h3l1.5-3 2.2 6 1.3-3H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>ResQlink <small>COMMUNITY WORKFLOW GUIDE</small></span>
+      </div>
+      <a class="top-link" href="#walkthrough">Explore workflow <span aria-hidden="true">↘</span></a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div class="eyebrow"><span class="pulse-dot"></span> A visual guide to the current application</div>
+      <h1>From a shared resource<br>to <span class="gradient-text">community care.</span></h1>
+      <p class="hero-copy">Follow how ResQlink moves information from a person’s browser, through the Flask API, into MongoDB—and how the same request can be followed by its requester, provider, and an approved volunteer.</p>
+      <div class="hero-actions">
+        <button class="button button-primary" id="start-tour" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 5 12 7-12 7V5Z" fill="currentColor"/></svg>
+          Start guided walkthrough
+        </button>
+        <a class="button button-quiet" href="#walkthrough">Choose a workflow <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="architecture" aria-label="ResQlink system architecture">
+        <div class="arch-node">
+          <span class="arch-icon" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 21h8m-4-4v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+          <span><strong>React browser app</strong><small>React · Vite · Motion · Leaflet</small></span>
+        </div>
+        <div class="arch-node">
+          <span class="arch-icon" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="8" cy="6" r="2" fill="#11101b" stroke="currentColor" stroke-width="1.7"/><circle cx="15" cy="12" r="2" fill="#11101b" stroke="currentColor" stroke-width="1.7"/><circle cx="10" cy="18" r="2" fill="#11101b" stroke="currentColor" stroke-width="1.7"/></svg></span>
+          <span><strong>Flask REST API</strong><small>Validation · JWT · role checks</small></span>
+        </div>
+        <div class="arch-node">
+          <span class="arch-icon" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" stroke-width="1.7"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7" stroke="currentColor" stroke-width="1.7"/></svg></span>
+          <span><strong>MongoDB Atlas</strong><small>users · resources · requests</small></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="walkthrough">
+      <div class="section-heading">
+        <div><div class="eyebrow">Choose a path</div><h2>Interactive workflow tour</h2></div>
+        <p>Use the controls to move through the documented application flow. This standalone guide is an animation and explanation—not a second ResQlink client.</p>
+      </div>
+      <div class="workflow-tabs" role="tablist" aria-label="Workflow type">
+        <button class="tab" type="button" role="tab" aria-selected="true" data-flow="donation">Donation to delivery</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-flow="verification">Account verification</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-flow="nearby">Nearby discovery</button>
+      </div>
+      <div class="demo-banner" role="note">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 3.9 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3l-7.5-13.1a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <span><strong>Presentation-only visual.</strong> It does not call the backend, use real people or records, or simulate GPS movement. The steps below describe code paths present in this workspace; the buttons only animate this explanation.</span>
+      </div>
+      <div class="workflow-layout">
+        <article class="journey-card" aria-live="polite">
+          <div class="journey-top"><p id="flow-kicker">Donation to delivery</p><span class="step-count" id="step-count">Step 1 of 5</span></div>
+          <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+          <div class="tour-step" id="step-content"></div>
+          <div class="journey-controls">
+            <div class="control-group">
+              <button class="icon-button" id="previous-step" type="button" aria-label="Previous step" title="Previous step">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="icon-button" id="next-step" type="button" aria-label="Next step" title="Next step">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <button class="button button-primary" id="play-tour" type="button">Play steps <span aria-hidden="true">✦</span></button>
+          </div>
+        </article>
+        <aside class="detail-card">
+          <h3>What happens in this step</h3>
+          <ul class="detail-list" id="detail-list"></ul>
+          <div class="role-note" id="role-note"></div>
+          <div class="mini-flow" id="mini-flow" aria-label="Data path for this step"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section shell" style="padding-top:0">
+      <div class="section-heading">
+        <div><div class="eyebrow">Project boundaries</div><h2>What this flow does—and does not do</h2></div>
+        <p>The animation follows the project’s real API and component boundaries. It does not fill in unfinished modules or claim features the code does not implement.</p>
+      </div>
+      <div class="more-workflows">
+        <article class="info-card">
+          <div class="arch-icon" aria-hidden="true">◎</div>
+          <h3>Delivery updates, not live GPS</h3>
+          <p>Volunteers claim an accepted delivery and record pickup, out-for-delivery, and delivered statuses. Request status views refresh periodically; there is no WebSocket, route planner, ETA engine, or live location feed.</p>
+          <code>POST /api/requests/&lt;id&gt;/delivery</code>
+        </article>
+        <article class="info-card">
+          <div class="arch-icon" aria-hidden="true">⌖</div>
+          <h3>Opt-in approximate organization pins</h3>
+          <p>Leaflet renders OpenStreetMap tiles. Browser location is used only after a user action; organization markers require an approved organization to share rounded service-area coordinates.</p>
+          <code>GET /api/nearby · Nominatim geocoding</code>
+        </article>
+        <article class="info-card">
+          <div class="arch-icon" aria-hidden="true">◇</div>
+          <h3>Blood bank directory, not inventory</h3>
+          <p>Blood banks can register, be verified, maintain profile details, and appear in the nearby directory. There is no implemented blood-stock API, reservation, or donor appointment workflow.</p>
+          <code>MongoDB users profile · no inventory route</code>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="shell footer-inner">
+      <span>ResQlink · workflow guide for project evaluation</span>
+      <span>Standalone visual · no backend connection · no real-time location</span>
+    </div>
+  </footer>
+
+  <script>
+    const flows = {
+      donation: {
+        title: "Donation to delivery",
+        steps: [
+          {
+            icon: "＋",
+            title: "1 · Share a resource",
+            description: "A signed-in member fills out the donation form with a title, category, description, location, and quantity. A JPG, PNG, or WebP photo is optional.",
+            tags: ["DonationForm.jsx", "JWT required", "Optional photo"],
+            endpoint: "POST /api/resources  ·  multipart/form-data",
+            details: [
+              ["Frontend", "DonationForm submits fields and an optional photo."],
+              ["Backend", "Flask validates category, account, file type, and 5 MB limit."],
+              ["Persistence", "Resource metadata is written to MongoDB resources; photo bytes are stored under backend/uploads/resource_photos."]
+            ],
+            note: "Only normal users and verified volunteer / NGO / Ashram accounts can publish; blood banks are not allowed to publish resource listings.",
+            path: ["Donor", "React form", "Flask validation", "MongoDB resources"]
+          },
+          {
+            icon: "▤",
+            title: "2 · Discover and request",
+            description: "The resource board fetches available listings from the database. A requester selects pickup or volunteer delivery and submits contact and need details.",
+            tags: ["Available resources", "Pickup or delivery", "Request saved"],
+            endpoint: "GET /api/resources  ·  POST /api/requests",
+            details: [
+              ["Read", "The resource board gets Available listings, with optional category filtering."],
+              ["Request", "The API confirms the resource exists and prevents requesting one’s own listing."],
+              ["Delivery destination", "If delivery is selected, a destination is required and is not shown to unassigned volunteers."]
+            ],
+            note: "A submitted request starts as pending and is attached to its requester and resource provider in resource_requests.",
+            path: ["Requester", "Resources page", "Flask API", "MongoDB request"]
+          },
+          {
+            icon: "✓",
+            title: "3 · Provider reviews",
+            description: "The resource owner sees incoming requests and can accept, decline with a note, or ask for clarification. The requester can answer a clarification.",
+            tags: ["Owner-only review", "Audit timeline", "Clarification"],
+            endpoint: "POST /api/requests/<id>/review  ·  POST /api/requests/<id>/response",
+            details: [
+              ["Authorization", "Backend checks that the reviewer owns the resource, or is an administrator."],
+              ["Decision", "An accepted request is stored with status approved; the history records accepted."],
+              ["Requester updates", "The requester's My Requests view shows the current status and its history."]
+            ],
+            note: "Provider acceptance is not the same as delivery assignment. A delivery task becomes claimable only after acceptance.",
+            path: ["Provider inbox", "JWT + owner check", "MongoDB update", "My Requests"]
+          },
+          {
+            icon: "↗",
+            title: "4 · Approved volunteer claims delivery",
+            description: "For accepted delivery requests, an approved volunteer can open Delivery tasks and claim an unassigned job. Private requester contact and destination are revealed to the assigned volunteer only.",
+            tags: ["Approved volunteer", "Claim race guarded", "Private destination"],
+            endpoint: "GET /api/requests?view=deliveries  ·  POST /api/requests/<id>/delivery",
+            details: [
+              ["Task list", "The backend filters delivery requests and strips identifying fields before assignment."],
+              ["Claim", "A conditional MongoDB update assigns the volunteer and changes status to volunteer_assigned."],
+              ["Handoffs", "Only that volunteer may record picked_up, out_for_delivery, then delivered."]
+            ],
+            note: "The app records human-entered handoff statuses. It does not read a volunteer’s GPS or calculate a route or arrival time.",
+            path: ["Approved volunteer", "Delivery task", "Flask role check", "MongoDB status history"]
+          },
+          {
+            icon: "◷",
+            title: "5 · Requester tracks progress",
+            description: "The requester opens My Requests to see the full delivery sequence, including when the provider has accepted but no volunteer has claimed the delivery yet.",
+            tags: ["Requester-only view", "15-second polling", "No live map"],
+            endpoint: "GET /api/requests  ·  frontend refresh interval: 15 seconds",
+            details: [
+              ["Timeline", "The UI shows submitted, provider decision, volunteer acceptance, pickup, out-for-delivery, and completion. Future steps remain visible while waiting."],
+              ["Volunteer acceptance", "After provider approval, My Requests explicitly says it is waiting for an approved volunteer to accept. Once claimed, the assigned volunteer is identified."],
+              ["Refresh", "The page polls the authenticated request endpoint every 15 seconds."],
+              ["Boundary", "There is no real-time socket, GPS tracking, ETA, route, or automatic delivery notification service."]
+            ],
+            note: "This resembles an order-status timeline, not live courier tracking.",
+            path: ["MongoDB history", "Flask JSON", "My Requests", "Status timeline"]
+          }
+        ]
+      },
+      verification: {
+        title: "Account verification",
+        steps: [
+          {
+            icon: "＋",
+            title: "1 · Register with a role",
+            description: "Public signup supports normal users, volunteers, NGOs / Ashrams, and blood banks. Admin is not a public signup role.",
+            tags: ["Auth.jsx", "Role-specific form", "No public admin"],
+            endpoint: "POST /api/auth/register",
+            details: [
+              ["Normal user", "Creates an account with verification_status not_required."],
+              ["Other roles", "Must submit role details and required identity / registration documents."],
+              ["Persistence", "Password hash and account profile are stored in MongoDB users; profile/doc metadata is embedded for current signup."]
+            ],
+            note: "Volunteer, NGO / Ashram, and Blood Bank accounts begin pending and cannot publish resources before approval.",
+            path: ["Signup form", "Flask validation", "MongoDB users", "Pending"]
+          },
+          {
+            icon: "⌕",
+            title: "2 · Admin reviews applications",
+            description: "A separately provisioned administrator views applicants, role/status counts, profiles, and protected verification documents.",
+            tags: ["AdminDashboard.jsx", "JWT + database role check", "Private documents"],
+            endpoint: "GET /api/admin/applications?role=…&status=…&q=…",
+            details: [
+              ["Backend gate", "admin_required verifies a JWT and reloads the user's role from MongoDB."],
+              ["Documents", "Files are served only by an admin-only route after path and extension checks."],
+              ["Filters", "The API supports role, status, and text search; status counts are returned."]
+            ],
+            note: "An admin can be created from a hidden-password CLI prompt using Flask's create-admin command; public signup cannot grant admin.",
+            path: ["Admin dashboard", "admin_required", "MongoDB users", "Protected upload"]
+          },
+          {
+            icon: "✓",
+            title: "3 · Approve or reject",
+            description: "The administrator approves a pending application or rejects it with a required reason. Review metadata is recorded.",
+            tags: ["Reviewer ID", "Timestamp", "Rejection reason"],
+            endpoint: "POST /api/admin/applications/<id>/decision",
+            details: [
+              ["Approval", "Requires all role-specific verification files to exist and be accessible."],
+              ["Rejection", "Requires a non-empty reason; the applicant can later resubmit updated documents."],
+              ["Permissions", "Backend routes independently enforce admin checks; unapproved verified roles are barred from restricted actions."]
+            ],
+            note: "Review decisions update MongoDB and the dashboard reloads application data.",
+            path: ["Admin decision", "Admin authorization", "MongoDB review fields", "Permissions update"]
+          }
+        ]
+      },
+      nearby: {
+        title: "Nearby discovery",
+        steps: [
+          {
+            icon: "⌖",
+            title: "1 · Choose how to search",
+            description: "Explore Nearby offers a name/city search, an organization-type filter, and list or map views. Location permission is requested only when the user presses Use my location.",
+            tags: ["NearbyExplorer.jsx", "Explicit permission", "List and map"],
+            endpoint: "GET /api/nearby?q=…&type=…",
+            details: [
+              ["List search", "The directory is fetched from backend organization accounts."],
+              ["Geolocation", "Browser coordinates are used for this search and are not stored."],
+              ["City search", "OpenStreetMap Nominatim geocodes the typed locality."]
+            ],
+            note: "This is an actual Leaflet map with OpenStreetMap tiles, not a static picture.",
+            path: ["User search", "Browser location / Nominatim", "Flask directory", "Leaflet"]
+          },
+          {
+            icon: "◎",
+            title: "2 · API filters real accounts",
+            description: "The backend selects approved NGO / Ashram and blood bank accounts, then applies role, text, and optional radius filters.",
+            tags: ["Verified users", "Maximum 500 scanned", "Haversine distance"],
+            endpoint: "GET /api/nearby?lat=…&lng=…&radius_km=…",
+            details: [
+              ["Source", "Organization records are read from MongoDB users."],
+              ["Privacy", "Phone and street-address fields are not returned."],
+              ["Distance", "The server calculates straight-line Haversine distance, not driving distance."]
+            ],
+            note: "Organizations without explicitly shared approximate coordinates can appear in a non-radius list search, but have no map marker.",
+            path: ["MongoDB users", "Verified role filter", "Haversine calculation", "Directory results"]
+          },
+          {
+            icon: "⌖",
+            title: "3 · Show opted-in map pins",
+            description: "An NGO or blood bank must opt in to publish an approximate service-area location from its profile. Coordinates are rounded before storage.",
+            tags: ["Organization opt-in", "Approximate coordinates", "OpenStreetMap"],
+            endpoint: "PUT /api/auth/profile  ·  Leaflet tile service",
+            details: [
+              ["No inferred pins", "The app does not fabricate coordinates for organizations."],
+              ["Map", "Leaflet renders OSM tile layers and markers from returned coordinates."],
+              ["External services", "Nominatim and OSM tiles require internet access and respect of their usage and attribution policies."]
+            ],
+            note: "The directory does not provide road routing, travel-time estimates, or route-based distance.",
+            path: ["Organization opt-in", "MongoDB profile", "Nearby endpoint", "Leaflet map"]
+          }
+        ]
+      }
+    };
+
+    const icons = {
+      plus: '<svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      file: '<svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M14 3v6h5M9 14h6m-6 4h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+      check: '<svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      truck: '<svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7.5" cy="18" r="1.8" stroke="currentColor" stroke-width="1.7"/><circle cx="17.5" cy="18" r="1.8" stroke="currentColor" stroke-width="1.7"/></svg>',
+      clock: '<svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+      pin: '<svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/></svg>',
+      shield: '<svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" stroke="currentColor" stroke-width="1.7"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    };
+
+    const flowKicker = document.getElementById("flow-kicker");
+    const stepContent = document.getElementById("step-content");
+    const stepCount = document.getElementById("step-count");
+    const progressFill = document.getElementById("progress-fill");
+    const detailList = document.getElementById("detail-list");
+    const roleNote = document.getElementById("role-note");
+    const miniFlow = document.getElementById("mini-flow");
+    const previousButton = document.getElementById("previous-step");
+    const nextButton = document.getElementById("next-step");
+    const playButton = document.getElementById("play-tour");
+    let activeFlow = "donation";
+    let activeStep = 0;
+    let playTimer = null;
+
+    function render() {
+      const flow = flows[activeFlow];
+      const step = flow.steps[activeStep];
+      flowKicker.textContent = flow.title;
+      stepCount.textContent = `Step ${activeStep + 1} of ${flow.steps.length}`;
+      progressFill.style.width = `${((activeStep + 1) / flow.steps.length) * 100}%`;
+      stepContent.className = "tour-step";
+      void stepContent.offsetWidth;
+      stepContent.innerHTML = `
+        <div class="step-icon">${icons[step.icon] || icons.check}</div>
+        <h3 class="step-title">${step.title}</h3>
+        <p class="step-description">${step.description}</p>
+        <div class="step-meta">${step.tags.map(tag => `<span class="chip">${tag}</span>`).join("")}</div>
+        <div class="endpoint"><span class="endpoint-label">Actual route / project evidence</span><code>${step.endpoint}</code></div>
+      `;
+      detailList.innerHTML = step.details.map(([title, text]) => `
+        <li class="detail-item"><span aria-hidden="true">✦</span><span><strong>${title}</strong>${text}</span></li>
+      `).join("");
+      roleNote.textContent = step.note;
+      miniFlow.innerHTML = step.path.map((node, index) => `
+        ${index ? '<span class="mini-arrow" aria-hidden="true">→</span>' : ""}
+        <span class="mini-node">${node}</span>
+      `).join("");
+      previousButton.disabled = activeStep === 0;
+      nextButton.disabled = activeStep === flow.steps.length - 1;
+    }
+
+    function stopTour() {
+      if (playTimer) window.clearInterval(playTimer);
+      playTimer = null;
+      playButton.innerHTML = 'Play steps <span aria-hidden="true">✦</span>';
+    }
+
+    function setFlow(name) {
+      stopTour();
+      activeFlow = name;
+      activeStep = 0;
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.setAttribute("aria-selected", String(tab.dataset.flow === name));
+      });
+      render();
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => setFlow(tab.dataset.flow));
+    });
+    previousButton.addEventListener("click", () => {
+      if (activeStep > 0) activeStep -= 1;
+      render();
+    });
+    nextButton.addEventListener("click", () => {
+      if (activeStep < flows[activeFlow].steps.length - 1) activeStep += 1;
+      render();
+    });
+    playButton.addEventListener("click", () => {
+      if (playTimer) {
+        stopTour();
+        return;
+      }
+      if (activeStep === flows[activeFlow].steps.length - 1) activeStep = 0;
+      playButton.textContent = "Pause walkthrough";
+      render();
+      playTimer = window.setInterval(() => {
+        if (activeStep >= flows[activeFlow].steps.length - 1) {
+          stopTour();
+          return;
+        }
+        activeStep += 1;
+        render();
+      }, 3200);
+    });
+    document.getElementById("start-tour").addEventListener("click", () => {
+      document.getElementById("walkthrough").scrollIntoView({ behavior: "smooth" });
+      setFlow("donation");
+      playButton.click();
+    });
+    render();
+  </script>
+</body>
+</html>

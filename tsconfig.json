@@ -25,6 +25,7 @@
     "noEmit": true
   },
   "include": [
+    "api/**/*.ts",
     "backend/**/*.ts",
     "frontend/src/**/*.ts",
     "frontend/src/**/*.tsx",

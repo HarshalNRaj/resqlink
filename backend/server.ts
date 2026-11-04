@@ -23,7 +23,7 @@ function getPort(): number {
 }
 
 const PORT = getPort();
-const app = express();
+export const app = express();
 app.get('/', (_req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -67,9 +67,23 @@ app.get('/', (_req, res) => {
 
 const db = new MongoStore();
 const JWT_SECRET = process.env.JWT_SECRET || 'giveconnect_jwt_secret_secure_key_2026';
+let databaseConnection: Promise<void> | null = null;
+
+function connectDatabase(): Promise<void> {
+  if (!databaseConnection) {
+    databaseConnection = db.connect().catch((error: unknown) => {
+      databaseConnection = null;
+      throw error;
+    });
+  }
+  return databaseConnection;
+}
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use((_req: Request, _res: Response, next: NextFunction) => {
+  connectDatabase().then(() => next(), next);
+});
 
 // --------------------------------------------------------------------------
 // Authentication & Role-Based Authorization Helpers
@@ -1417,7 +1431,7 @@ app.get('/api/volunteer-tasks', async (req: Request, res: Response) => {
 // Production frontend assets are served by the backend; development uses Vite separately.
 // --------------------------------------------------------------------------
 async function startServer() {
-  await db.connect();
+  await connectDatabase();
 
   const distPath = path.resolve(process.cwd(), 'frontend', 'dist');
   if (process.env.NODE_ENV === 'production' && fs.existsSync(distPath)) {
@@ -1436,7 +1450,9 @@ async function startServer() {
 });
 }
 
-startServer().catch((err) => {
-  console.error('Failed to start server:', err instanceof Error ? err.message : err);
-  process.exit(1);
-});
+if (process.env.VERCEL !== '1') {
+  startServer().catch((err) => {
+    console.error('Failed to start server:', err instanceof Error ? err.message : err);
+    process.exit(1);
+  });
+}

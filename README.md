@@ -31,3 +31,7 @@ All backend routes use MongoDB. The admin database panel shows MongoDB collectio
 - `npm run lint` checks the backend and frontend TypeScript.
 - `npm run build` writes the frontend bundle to `frontend/dist`.
 - With `NODE_ENV=production`, `npm start` starts the API and serves `frontend/dist`.
+
+### Deploy to Vercel
+
+Import the repository into Vercel with the project root set to the repository root. The included `vercel.json` builds the Vite frontend, serves it as a single-page application, and routes `/api/*` requests to the Express API function. Add `MONGODB_URI`, `MONGODB_DB_NAME`, and `JWT_SECRET` as Vercel environment variables for every environment you use. The API connects to MongoDB on the first request; make sure the MongoDB deployment allows connections from your hosting environment.

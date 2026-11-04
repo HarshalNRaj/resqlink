@@ -1,6 +1,3 @@
-import dns from 'node:dns';
-
-dns.setServers(['8.8.8.8']);
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';

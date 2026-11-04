@@ -1,7 +1,17 @@
+import dns from 'node:dns';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { MongoClient, type Db, type Document } from 'mongodb';
+
+const dnsServers = dns.getServers();
+if (
+  process.env.VERCEL !== '1' &&
+  dnsServers.length > 0 &&
+  dnsServers.every((server) => server === '127.0.0.1' || server === '::1')
+) {
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
+}
 
 type BoundValue = unknown;
 

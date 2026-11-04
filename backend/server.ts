@@ -81,8 +81,18 @@ function connectDatabase(): Promise<void> {
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use((_req: Request, _res: Response, next: NextFunction) => {
-  connectDatabase().then(() => next(), next);
+app.use((_req: Request, res: Response, next: NextFunction) => {
+  connectDatabase()
+    .then(() => next())
+    .catch((error: unknown) => {
+      console.error(
+        'MongoDB request initialization failed:',
+        error instanceof Error ? error.message : error
+      );
+      res.status(503).json({
+        error: 'Database is unavailable. Check the MongoDB environment variables and Atlas network access.',
+      });
+    });
 });
 
 // --------------------------------------------------------------------------

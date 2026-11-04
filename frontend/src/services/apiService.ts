@@ -162,9 +162,23 @@ class ApiServiceClass {
       throw new Error('Your session has expired. Please sign in again.');
     }
 
-    const data = await response.json();
+    const responseText = await response.text();
+    let data: { error?: string } | null = null;
+    if (responseText) {
+      try {
+        data = JSON.parse(responseText) as { error?: string };
+      } catch {
+        throw new Error(
+          `The server returned an invalid response (HTTP ${response.status}). Please check the API deployment logs.`
+        );
+      }
+    }
+
     if (!response.ok) {
-      throw new Error(data.error || 'Server request failed');
+      throw new Error(data?.error || `Server request failed (HTTP ${response.status}).`);
+    }
+    if (!data) {
+      throw new Error(`The server returned an empty response (HTTP ${response.status}). Please check the API deployment logs.`);
     }
 
     return data as T;

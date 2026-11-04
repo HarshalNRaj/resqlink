@@ -1,5 +1,9 @@
+import { createRequire } from 'node:module';
 import type { Request, Response } from 'express';
-import { app } from '../backend/server';
+import type { Express } from 'express';
+
+const require = createRequire(import.meta.url);
+const { app } = require('../backend-dist/server.cjs') as { app: Express };
 
 export default function handler(req: Request, res: Response): void {
   const requestUrl = new URL(req.url || '/', `https://${req.headers.host || 'localhost'}`);

@@ -1,0 +1,6 @@
+{
+  "name": "GiveConnect - Donation & Resource Redistribution Platform",
+  "description": "A modern platform connecting donors, recipients, NGOs, ashrams, blood banks, blood donors, and volunteers for transparent resource redistribution.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

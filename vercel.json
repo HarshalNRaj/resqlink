@@ -3,11 +3,15 @@
   "buildCommand": "npm run build",
   "outputDirectory": "frontend/dist",
   "functions": {
-    "api/[...path].ts": {
+    "api/handler.ts": {
       "maxDuration": 30
     }
   },
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/handler?__path=:path*"
+    },
     {
       "source": "/:path((?!api/).*)",
       "destination": "/index.html"
